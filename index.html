@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Activity Spinner</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <main class="spinner-page">
+
+    <header class="spinner-header">
+
+      <p class="eyebrow">
+        Wiltshire Family Staycation
+      </p>
+
+      <h1>
+        Activity Spinner
+      </h1>
+
+      <p class="spinner-introduction">
+        Pick a category, spin the wheel and let fate choose what we do next.
+      </p>
+
+    </header>
+
+
+    <section class="category-section">
+
+      <div
+        class="category-buttons"
+        id="category-buttons"
+        aria-label="Choose an activity category"
+      >
+      </div>
+
+    </section>
+
+
+    <section class="wheel-section">
+
+      <div class="wheel-area">
+
+        <div class="wheel-pointer" aria-hidden="true">
+          <span></span>
+        </div>
+
+        <div class="wheel-shell">
+
+          <canvas
+            id="activity-wheel"
+            width="700"
+            height="700"
+            aria-label="Activity spinner wheel"
+          >
+          </canvas>
+
+          <button
+            class="spin-button"
+            id="spin-button"
+            type="button"
+          >
+            <span class="spin-button-main">
+              Spin
+            </span>
+
+            <span class="spin-button-small">
+              the wheel
+            </span>
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section
+      class="result-section"
+      id="result-section"
+      aria-live="polite"
+    >
+
+      <p class="result-label">
+        Your activity
+      </p>
+
+      <div class="result-display">
+
+        <span
+          class="result-emoji"
+          id="result-emoji"
+          aria-hidden="true"
+        >
+          ✨
+        </span>
+
+        <p id="result-text">
+          Spin the wheel to choose
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <section class="spinner-actions">
+
+      <button
+        class="secondary-button"
+        id="reset-button"
+        type="button"
+      >
+        Reset activities
+      </button>
+
+    </section>
+
+
+    <p class="remaining-message" id="remaining-message">
+    </p>
+
+  </main>
+
+
+  <script src="script.js"></script>
+
+</body>
+</html>
