@@ -64,18 +64,7 @@ body {
 
   margin: 0;
 
-  background:
-    radial-gradient(
-      circle at top left,
-      rgba(220, 230, 217, 0.72),
-      transparent 320px
-    ),
-    radial-gradient(
-      circle at bottom right,
-      rgba(238, 226, 206, 0.52),
-      transparent 360px
-    ),
-    transparent;
+  background: transparent;
 
    overflow-x: hidden;
    
