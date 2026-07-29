@@ -424,25 +424,12 @@ function drawSegmentLabel(
     slightly so it sits more naturally.
   */
 
-  if (segmentAngle < 0.48) {
-    context.rotate(Math.PI / 2);
-
-    context.textAlign = "center";
-
-    context.fillText(
-      fittedLabel,
-      radius * 0.59,
-      0,
-      maximumWidth
-    );
-  } else {
-    context.fillText(
-      fittedLabel,
-      textPosition,
-      0,
-      maximumWidth
-    );
-  }
+  context.fillText(
+  fittedLabel,
+  textPosition,
+ 0,
+  maximumWidth
+);
 
   context.restore();
 }
