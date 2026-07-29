@@ -214,8 +214,15 @@ function createCategoryButtons() {
       button.className = "category-button";
       button.dataset.category = categoryKey;
 
-      button.textContent =
-        `${category.emoji} ${category.label}`;
+      button.innerHTML = `
+  <span class="category-emoji" aria-hidden="true">
+    ${category.emoji}
+  </span>
+
+  <span class="category-name">
+    ${category.label}
+  </span>
+`;
 
       if (categoryKey === activeCategory) {
         button.classList.add("is-active");
