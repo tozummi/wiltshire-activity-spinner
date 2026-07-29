@@ -740,6 +740,27 @@ window.addEventListener(
   drawWheel
 );
 
+/* =========================================
+   AUTO RESIZE IFRAME
+========================================= */
+
+function sendHeight() {
+  const height = document.documentElement.scrollHeight;
+
+  window.parent.postMessage(
+    {
+      type: "activity-spinner-height",
+      height: height
+    },
+    "*"
+  );
+}
+
+window.addEventListener("load", sendHeight);
+
+window.addEventListener("resize", sendHeight);
+
+new ResizeObserver(sendHeight).observe(document.body);
 
 /* =========================================
    INITIALISE
