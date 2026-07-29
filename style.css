@@ -120,21 +120,20 @@ button {
 }
 
 .category-buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   width: 100%;
-  justify-content: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .category-button {
-  flex: 1;
   min-width: 0;
 
   padding:
     8px
-    4px;
+    2px;
 
-  white-space: nowrap;
+  overflow: hidden;
 
   background: rgba(255, 253, 248, 0.84);
 
@@ -147,8 +146,13 @@ button {
 
   cursor: pointer;
 
-  font-size: 0.63rem;
+  font-size: clamp(0.52rem, 2.3vw, 0.67rem);
   font-weight: 700;
+  line-height: 1.1;
+
+  white-space: nowrap;
+  text-align: center;
+  text-overflow: clip;
 
   transition:
     transform 160ms ease,
