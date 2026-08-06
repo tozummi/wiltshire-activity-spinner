@@ -574,3 +574,33 @@ button {
   }
 
 }
+
+/* =========================================
+   SPINNER INTERACTION LOCK + HISTORY
+========================================= */
+
+.category-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+  transform: none;
+}
+
+.category-buttons.is-locked .category-button {
+  pointer-events: none;
+}
+
+.last-picked {
+  margin: 9px 0 0;
+  color: var(--text-faint);
+  font-size: 0.64rem;
+  line-height: 1.35;
+}
+
+.last-picked span:first-child {
+  margin-right: 4px;
+  font-weight: 600;
+}
+
+.last-picked span:last-child {
+  color: var(--text-soft);
+}
