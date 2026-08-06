@@ -95,13 +95,21 @@ const spinDuration = 5800;
 const minimumTurns = 5;
 const maximumExtraTurns = 3;
 
+const STORAGE_KEYS = {
+  currentActivity: "wiltshireSpinnerCurrentActivityV1",
+  lastActivity: "wiltshireSpinnerLastActivityV1"
+};
+
 
 /* =========================================
    ELEMENTS
 ========================================= */
 
-const canvas = document.getElementById("activity-wheel");
-const context = canvas.getContext("2d");
+const canvas =
+  document.getElementById("activity-wheel");
+
+const context =
+  canvas.getContext("2d");
 
 const categoryButtonsContainer =
   document.getElementById("category-buttons");
@@ -121,6 +129,12 @@ const resultText =
 const remainingMessage =
   document.getElementById("remaining-message");
 
+const lastPicked =
+  document.getElementById("last-picked");
+
+const lastPickedValue =
+  document.getElementById("last-picked-value");
+
 
 /* =========================================
    STATE
@@ -132,6 +146,9 @@ let usedActivityKeys = new Set();
 
 let currentRotation = 0;
 let isSpinning = false;
+
+let currentActivity = null;
+let lastActivity = null;
 
 
 /* =========================================
@@ -156,7 +173,8 @@ function buildAllActivities() {
     }
   );
 
-  activityCategories.all.activities = combinedActivities;
+  activityCategories.all.activities =
+    combinedActivities;
 }
 
 
@@ -169,7 +187,8 @@ function makeActivityKey(activity) {
 }
 
 function getCategoryActivities(categoryKey) {
-  const category = activityCategories[categoryKey];
+  const category =
+    activityCategories[categoryKey];
 
   if (!category) {
     return [];
@@ -177,7 +196,8 @@ function getCategoryActivities(categoryKey) {
 
   return category.activities.map((activity) => ({
     ...activity,
-    category: activity.category || categoryKey
+    category:
+      activity.category || categoryKey
   }));
 }
 
@@ -193,9 +213,122 @@ function refreshAvailableActivities() {
     });
 }
 
+
+/* =========================================
+   SAVED RESULT HISTORY
+========================================= */
+
+function readStoredActivity(key) {
+  try {
+    const stored =
+      localStorage.getItem(key);
+
+    return stored
+      ? JSON.parse(stored)
+      : null;
+  } catch (error) {
+    console.warn(
+      "Could not read saved spinner activity.",
+      error
+    );
+
+    return null;
+  }
+}
+
+function saveResultHistory() {
+  try {
+    if (currentActivity) {
+      localStorage.setItem(
+        STORAGE_KEYS.currentActivity,
+        JSON.stringify(currentActivity)
+      );
+    } else {
+      localStorage.removeItem(
+        STORAGE_KEYS.currentActivity
+      );
+    }
+
+    if (lastActivity) {
+      localStorage.setItem(
+        STORAGE_KEYS.lastActivity,
+        JSON.stringify(lastActivity)
+      );
+    } else {
+      localStorage.removeItem(
+        STORAGE_KEYS.lastActivity
+      );
+    }
+  } catch (error) {
+    console.warn(
+      "Could not save spinner activity.",
+      error
+    );
+  }
+}
+
+function renderResultHistory() {
+  if (currentActivity) {
+    resultEmoji.textContent =
+      currentActivity.emoji;
+
+    resultText.textContent =
+      currentActivity.name;
+  } else {
+    resultEmoji.textContent = "✨";
+
+    resultText.textContent =
+      "Spin the wheel to choose";
+  }
+
+  if (
+    lastActivity &&
+    lastPicked &&
+    lastPickedValue
+  ) {
+    lastPicked.hidden = false;
+
+    lastPickedValue.textContent =
+      `${lastActivity.emoji} ${lastActivity.name}`;
+  } else if (
+    lastPicked &&
+    lastPickedValue
+  ) {
+    lastPicked.hidden = true;
+    lastPickedValue.textContent = "";
+  }
+}
+
 function resetResult() {
-  resultEmoji.textContent = "✨";
-  resultText.textContent = "Spin the wheel to choose";
+  currentActivity = null;
+  lastActivity = null;
+
+  saveResultHistory();
+  renderResultHistory();
+}
+
+
+/* =========================================
+   INTERACTION LOCK
+========================================= */
+
+function setInterfaceLocked(locked) {
+  spinButton.disabled =
+    locked ||
+    availableActivities.length === 0;
+
+  resetButton.disabled = locked;
+
+  document
+    .querySelectorAll(".category-button")
+    .forEach((button) => {
+      button.disabled = locked;
+    });
+
+  categoryButtonsContainer.classList.toggle(
+    "is-locked",
+    locked
+  );
 }
 
 
@@ -208,21 +341,25 @@ function createCategoryButtons() {
 
   Object.entries(activityCategories).forEach(
     ([categoryKey, category]) => {
-      const button = document.createElement("button");
+      const button =
+        document.createElement("button");
 
       button.type = "button";
       button.className = "category-button";
       button.dataset.category = categoryKey;
 
       button.innerHTML = `
-  <span class="category-emoji" aria-hidden="true">
-    ${category.emoji}
-  </span>
+        <span
+          class="category-emoji"
+          aria-hidden="true"
+        >
+          ${category.emoji}
+        </span>
 
-  <span class="category-name">
-    ${category.label}
-  </span>
-`;
+        <span class="category-name">
+          ${category.label}
+        </span>
+      `;
 
       if (categoryKey === activeCategory) {
         button.classList.add("is-active");
@@ -232,7 +369,9 @@ function createCategoryButtons() {
         selectCategory(categoryKey);
       });
 
-      categoryButtonsContainer.appendChild(button);
+      categoryButtonsContainer.appendChild(
+        button
+      );
     }
   );
 }
@@ -254,10 +393,14 @@ function selectCategory(categoryKey) {
     });
 
   refreshAvailableActivities();
-  resetResult();
   resetWheelRotation();
   drawWheel();
   updateRemainingMessage();
+
+  /*
+    The current result stays visible until
+    the next spin has completely finished.
+  */
 }
 
 
@@ -274,9 +417,15 @@ function drawWheel() {
   const centreX = width / 2;
   const centreY = height / 2;
 
-  const radius = Math.min(width, height) / 2;
+  const radius =
+    Math.min(width, height) / 2;
 
-  context.clearRect(0, 0, width, height);
+  context.clearRect(
+    0,
+    0,
+    width,
+    height
+  );
 
   if (activities.length === 0) {
     drawEmptyWheel(
@@ -289,25 +438,29 @@ function drawWheel() {
   }
 
   const segmentAngle =
-    (Math.PI * 2) / activities.length;
+    (Math.PI * 2) /
+    activities.length;
 
-  activities.forEach((activity, index) => {
-    const startAngle =
-      index * segmentAngle - Math.PI / 2;
+  activities.forEach(
+    (activity, index) => {
+      const startAngle =
+        index * segmentAngle -
+        Math.PI / 2;
 
-    const endAngle =
-      startAngle + segmentAngle;
+      const endAngle =
+        startAngle + segmentAngle;
 
-    drawSegment(
-      activity,
-      index,
-      startAngle,
-      endAngle,
-      centreX,
-      centreY,
-      radius
-    );
-  });
+      drawSegment(
+        activity,
+        index,
+        startAngle,
+        endAngle,
+        centreX,
+        centreY,
+        radius
+      );
+    }
+  );
 
   drawWheelBorder(
     centreX,
@@ -343,7 +496,9 @@ function drawSegment(
   context.closePath();
 
   context.fillStyle =
-    wheelColours[index % wheelColours.length];
+    wheelColours[
+      index % wheelColours.length
+    ];
 
   context.fill();
 
@@ -383,9 +538,7 @@ function drawSegmentLabel(
     centreY
   );
 
-  context.rotate(
-    middleAngle
-  );
+  context.rotate(middleAngle);
 
   const activityCount =
     availableActivities.length;
@@ -426,17 +579,12 @@ function drawSegmentLabel(
   const textPosition =
     radius * 0.87;
 
-  /*
-    When slices are narrow, rotate the text
-    slightly so it sits more naturally.
-  */
-
   context.fillText(
-  fittedLabel,
-  textPosition,
- 0,
-  maximumWidth
-);
+    fittedLabel,
+    textPosition,
+    0,
+    maximumWidth
+  );
 
   context.restore();
 }
@@ -547,8 +695,7 @@ function spinWheel() {
   }
 
   isSpinning = true;
-  spinButton.disabled = true;
-  resetButton.disabled = true;
+  setInterfaceLocked(true);
 
   const selectedIndex =
     Math.floor(
@@ -574,10 +721,14 @@ function spinWheel() {
     360 - selectedSegmentCentre;
 
   const currentNormalised =
-    ((currentRotation % 360) + 360) % 360;
+    (
+      (currentRotation % 360) +
+      360
+    ) % 360;
 
   let extraRotation =
-    targetWithinCircle - currentNormalised;
+    targetWithinCircle -
+    currentNormalised;
 
   if (extraRotation < 0) {
     extraRotation += 360;
@@ -588,7 +739,8 @@ function spinWheel() {
     randomTurns * 360 +
     extraRotation;
 
-  currentRotation = targetRotation;
+  currentRotation =
+    targetRotation;
 
   canvas.style.transform =
     `rotate(${currentRotation}deg)`;
@@ -604,40 +756,44 @@ function finishSpin(selectedIndex) {
 
   if (!selectedActivity) {
     isSpinning = false;
-    spinButton.disabled = false;
-    resetButton.disabled = false;
+    setInterfaceLocked(false);
+    updateRemainingMessage();
 
     return;
   }
 
-  resultEmoji.textContent =
-    selectedActivity.emoji;
+  lastActivity =
+    currentActivity
+      ? { ...currentActivity }
+      : null;
 
-  resultText.textContent =
-    selectedActivity.name;
+  currentActivity = {
+    name: selectedActivity.name,
+    emoji: selectedActivity.emoji,
+    category: selectedActivity.category
+  };
+
+  saveResultHistory();
+  renderResultHistory();
 
   usedActivityKeys.add(
     makeActivityKey(selectedActivity)
   );
 
-  isSpinning = false;
-  spinButton.disabled = false;
-  resetButton.disabled = false;
-
-  updateRemainingMessage();
-
   /*
-    The selected activity remains visible
-    until the next category change or reset.
-
-    The wheel refreshes shortly afterwards,
-    removing that activity from future spins.
+    Keep the controls locked until the chosen
+    activity has been removed from the wheel.
+    This prevents hidden duplicate selections.
   */
 
   window.setTimeout(() => {
     refreshAvailableActivities();
     resetWheelRotation();
     drawWheel();
+    updateRemainingMessage();
+
+    isSpinning = false;
+    setInterfaceLocked(false);
     updateRemainingMessage();
   }, 900);
 }
@@ -663,8 +819,11 @@ function resetActivities() {
 
 function resetWheelRotation() {
   canvas.style.transition = "none";
+
   currentRotation = 0;
-  canvas.style.transform = "rotate(0deg)";
+
+  canvas.style.transform =
+    "rotate(0deg)";
 
   /*
     Force the browser to apply the reset
@@ -684,7 +843,9 @@ function resetWheelRotation() {
 
 function updateRemainingMessage() {
   const total =
-    getCategoryActivities(activeCategory).length;
+    getCategoryActivities(
+      activeCategory
+    ).length;
 
   const remaining =
     availableActivities.length;
@@ -693,7 +854,9 @@ function updateRemainingMessage() {
     remainingMessage.textContent =
       "There are no activities in this category.";
 
-    spinButton.disabled = true;
+    if (!isSpinning) {
+      spinButton.disabled = true;
+    }
 
     return;
   }
@@ -702,12 +865,16 @@ function updateRemainingMessage() {
     remainingMessage.textContent =
       "Every activity in this category has been chosen.";
 
-    spinButton.disabled = true;
+    if (!isSpinning) {
+      spinButton.disabled = true;
+    }
 
     return;
   }
 
-  spinButton.disabled = false;
+  if (!isSpinning) {
+    spinButton.disabled = false;
+  }
 
   if (remaining === total) {
     remainingMessage.textContent =
@@ -740,12 +907,14 @@ window.addEventListener(
   drawWheel
 );
 
+
 /* =========================================
    AUTO RESIZE IFRAME
 ========================================= */
 
 function sendHeight() {
-  const height = document.documentElement.scrollHeight;
+  const height =
+    document.documentElement.scrollHeight;
 
   window.parent.postMessage(
     {
@@ -756,11 +925,20 @@ function sendHeight() {
   );
 }
 
-window.addEventListener("load", sendHeight);
+window.addEventListener(
+  "load",
+  sendHeight
+);
 
-window.addEventListener("resize", sendHeight);
+window.addEventListener(
+  "resize",
+  sendHeight
+);
 
-new ResizeObserver(sendHeight).observe(document.body);
+new ResizeObserver(
+  sendHeight
+).observe(document.body);
+
 
 /* =========================================
    INITIALISE
@@ -768,10 +946,23 @@ new ResizeObserver(sendHeight).observe(document.body);
 
 function initialiseSpinner() {
   buildAllActivities();
+
+  currentActivity =
+    readStoredActivity(
+      STORAGE_KEYS.currentActivity
+    );
+
+  lastActivity =
+    readStoredActivity(
+      STORAGE_KEYS.lastActivity
+    );
+
   createCategoryButtons();
   refreshAvailableActivities();
   resetWheelRotation();
   drawWheel();
+  renderResultHistory();
+  setInterfaceLocked(false);
   updateRemainingMessage();
 }
 
