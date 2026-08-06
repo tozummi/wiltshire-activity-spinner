@@ -30,11 +30,18 @@ const activityCategories = {
     label: "Indoor",
     emoji: "🏠",
     activities: [
-      { name: "Board games", emoji: "🎲" },
+      { name: "Board Games", emoji: "🎲" },
       { name: "Charades", emoji: "🎭" },
-      { name: "Movie night", emoji: "🎬" },
-      { name: "Family quiz", emoji: "🧠" },
-      { name: "Card games", emoji: "🃏" }
+      { name: "Card Games", emoji: "🃏" },
+      { name: "Mafia", emoji: "🕵️" },
+      { name: "Pictionary", emoji: "🎨" },
+      { name: "Karaoke", emoji: "🎤" },
+      { name: "Two Truths and a Lie", emoji: "🤔" },
+      { name: "Would You Rather?", emoji: "💭" },
+      { name: "Bengali Proverb Guessing", emoji: "📖" },
+      { name: "Islamic Quiz", emoji: "☪️" },
+      { name: "Family Quiz", emoji: "🧠" },
+      { name: "Family Storytelling", emoji: "💬" }
     ]
   },
 
@@ -42,11 +49,17 @@ const activityCategories = {
     label: "Outdoor",
     emoji: "🌿",
     activities: [
-      { name: "Family walk", emoji: "🥾" },
-      { name: "Garden games", emoji: "🏏" },
+      { name: "Family Walk", emoji: "🥾" },
+      { name: "Garden Games", emoji: "🏏" },
       { name: "Football", emoji: "⚽" },
       { name: "Picnic", emoji: "🧺" },
-      { name: "Nature scavenger hunt", emoji: "🔎" }
+      { name: "Photography Challenge", emoji: "📸" },
+      { name: "Sunset Walk", emoji: "🌅" },
+      { name: "DIY Olympics", emoji: "🏅" },
+      { name: "Sponge Relay", emoji: "🧽" },
+      { name: "Nature Bingo", emoji: "🌼" },
+      { name: "Wildflower Hunt", emoji: "🌸" },
+      { name: "Feed the Ducks", emoji: "🦆" }
     ]
   },
 
@@ -54,11 +67,16 @@ const activityCategories = {
     label: "Children",
     emoji: "🧸",
     activities: [
-      { name: "Treasure hunt", emoji: "🗺️" },
-      { name: "Colouring competition", emoji: "🎨" },
-      { name: "Musical statues", emoji: "🎵" },
-      { name: "Bubble games", emoji: "🫧" },
-      { name: "Story time", emoji: "📚" }
+      { name: "Hide and Seek", emoji: "🙈" },
+      { name: "Nature Scavenger Hunt", emoji: "🔎" },
+      { name: "Colouring Competition", emoji: "🎨" },
+      { name: "Musical Statues", emoji: "🎵" },
+      { name: "Bubble Games", emoji: "🫧" },
+      { name: "Story Time", emoji: "📚" },
+      { name: "Sock Wrestling Tournament", emoji: "🧦" },
+      { name: "Paper Aeroplane Competition", emoji: "✈️" },
+      { name: "Blind Drawing Challenge", emoji: "✏️" },
+      { name: "Longest Jump Challenge", emoji: "🦘" }
     ]
   },
 
@@ -66,15 +84,15 @@ const activityCategories = {
     label: "Evening",
     emoji: "🌙",
     activities: [
-      { name: "Hot chocolate and film", emoji: "☕" },
-      { name: "Family quiz night", emoji: "❓" },
-      { name: "Late-night board games", emoji: "🎲" },
+      { name: "Chai & Dessert Night", emoji: "☕" },
+      { name: "Family Film", emoji: "🎬" },
+      { name: "Late-Night Board Games", emoji: "🎲" },
       { name: "Stargazing", emoji: "⭐" },
-      { name: "Family storytelling", emoji: "💬" }
+      { name: "Family Talent Show", emoji: "🎭" },
+      { name: "Guess the Sound", emoji: "🔊" }
     ]
   }
 };
-
 
 /* =========================================
    SETTINGS
